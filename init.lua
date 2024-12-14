@@ -695,7 +695,7 @@ require('lazy').setup({
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
-        jdtls = {},
+        -- jdtls = {},
         -- clangd = {},
         gopls = {},
         -- pyright = {},
@@ -1001,7 +1001,7 @@ require('lazy').setup({
   },
 
   -- CUSTOM PLUGINS
-  { 'mfussenegger/nvim-jdtls' },
+  -- { 'mfussenegger/nvim-jdtls' },
   {
     'pmizio/typescript-tools.nvim',
     dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
