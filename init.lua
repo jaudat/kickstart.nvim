@@ -482,6 +482,7 @@ require('lazy').setup({
         defaults = {
           layout_config = { horizontal = { preview_cutoff = 0 } },
           hidden = true,
+          path_display = { 'truncate' }, -- Truncates the *start*, shows the end
         },
         pickers = { colorscheme = { enable_preview = true } },
         extensions = {
