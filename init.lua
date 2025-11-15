@@ -212,13 +212,17 @@ vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
--- CUSTOM COMMAND TO COPY FILEPATH
+-- CUSTOM COMMANDS
+
+-- -- COPY FILEPATH
 vim.keymap.set('n', '<leader>pc', function()
   vim.fn.setreg('+', vim.fn.expand '%:p')
 end, { desc = 'Copy current file absolute path to clipboard' })
 vim.keymap.set('n', '<leader>pr', function()
   vim.fn.setreg('+', vim.fn.expand '%')
 end, { desc = 'Copy current file relative path to clipboard' })
+
+-- END CUSTOM COMMANDS
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
