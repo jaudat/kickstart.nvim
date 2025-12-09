@@ -212,7 +212,7 @@ vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 -- vim.keymap.set("n", "<C-S-j>", "<C-w>J", { desc = "Move window to the lower" })
 -- vim.keymap.set("n", "<C-S-k>", "<C-w>K", { desc = "Move window to the upper" })
 
--- CUSTOM COMMANDS
+-- HACK: CUSTOM COMMANDS
 
 -- -- COPY FILEPATH
 vim.keymap.set('n', '<leader>pc', function()
@@ -222,7 +222,7 @@ vim.keymap.set('n', '<leader>pr', function()
   vim.fn.setreg('+', vim.fn.expand '%')
 end, { desc = 'Copy current file relative path to clipboard' })
 
--- END CUSTOM COMMANDS
+-- HACK: END CUSTOM COMMANDS
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -266,6 +266,7 @@ rtp:prepend(lazypath)
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
+  -- HACK: Custom Plugins
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
   'tpope/vim-fugitive',
 
@@ -323,7 +324,6 @@ require('lazy').setup({
       },
     },
   },
-
   {
     'stevearc/oil.nvim',
     opts = {},
@@ -375,6 +375,41 @@ require('lazy').setup({
       }
     end,
   },
+  {
+    'kylechui/nvim-surround',
+    version = '^3.0.0', -- Use for stability; omit to use `main` branch for the latest features
+    event = 'VeryLazy',
+    config = function()
+      require('nvim-surround').setup {
+        -- Configuration here, or leave empty to use defaults
+      }
+    end,
+  },
+  -- { 'mfussenegger/nvim-jdtls' },
+  {
+    'pmizio/typescript-tools.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+    opts = {},
+  },
+  -- {
+  --   'christoomey/vim-tmux-navigator',
+  --   cmd = {
+  --     'TmuxNavigateLeft',
+  --     'TmuxNavigateDown',
+  --     'TmuxNavigateUp',
+  --     'TmuxNavigateRight',
+  --     'TmuxNavigatePrevious',
+  --   },
+  --   keys = {
+  --     { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
+  --     { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
+  --     { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
+  --     { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
+  --     { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
+  --   },
+  -- },
+  -- HACK: End Custom Plugins
+
   -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
   --
   -- This is often very useful to both group configuration, as well as handle
@@ -1068,31 +1103,6 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
-  },
-
-  -- CUSTOM PLUGINS
-  -- { 'mfussenegger/nvim-jdtls' },
-  {
-    'pmizio/typescript-tools.nvim',
-    dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
-    opts = {},
-  },
-  {
-    'christoomey/vim-tmux-navigator',
-    cmd = {
-      'TmuxNavigateLeft',
-      'TmuxNavigateDown',
-      'TmuxNavigateUp',
-      'TmuxNavigateRight',
-      'TmuxNavigatePrevious',
-    },
-    keys = {
-      { '<c-h>', '<cmd><C-U>TmuxNavigateLeft<cr>' },
-      { '<c-j>', '<cmd><C-U>TmuxNavigateDown<cr>' },
-      { '<c-k>', '<cmd><C-U>TmuxNavigateUp<cr>' },
-      { '<c-l>', '<cmd><C-U>TmuxNavigateRight<cr>' },
-      { '<c-\\>', '<cmd><C-U>TmuxNavigatePrevious<cr>' },
-    },
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
