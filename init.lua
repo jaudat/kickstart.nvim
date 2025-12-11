@@ -221,7 +221,6 @@ end, { desc = 'Copy current file absolute path to clipboard' })
 vim.keymap.set('n', '<leader>pr', function()
   vim.fn.setreg('+', vim.fn.expand '%')
 end, { desc = 'Copy current file relative path to clipboard' })
-
 -- HACK: END CUSTOM COMMANDS
 
 -- [[ Basic Autocommands ]]
@@ -591,6 +590,22 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sn', function()
         builtin.find_files { cwd = vim.fn.stdpath 'config' }
       end, { desc = '[S]earch [N]eovim files' })
+
+      -- HACK: Custom bindings
+      -- add live grep search on current directory
+      vim.keymap.set('n', '<leader>sc', function()
+        local cwd
+
+        -- Try to detect Oil
+        local ok, oil = pcall(require, 'oil')
+        if ok and oil.get_current_dir() then
+          cwd = oil.get_current_dir()
+        else
+          cwd = vim.fn.expand '%:p:h'
+        end
+        builtin.live_grep { cwd = cwd }
+      end, { desc = '[S]earch [C]urrent subdirectory by Grep' })
+      -- HACK: End Custom bindings
     end,
   },
 
