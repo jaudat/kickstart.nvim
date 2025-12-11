@@ -539,7 +539,14 @@ require('lazy').setup({
         -- },
         -- pickers = {}
         defaults = {
-          layout_config = { horizontal = { preview_cutoff = 0 } },
+          layout_strategy = 'vertical',
+          layout_config = {
+            vertical = {
+              preview_height = 0.60, -- 60% preview (bottom)
+              results_height = 0.40, -- 40% results (top)
+              preview_cutoff = 0,
+            },
+          },
           hidden = true,
           path_display = { 'truncate' }, -- Truncates the *start*, shows the end
         },
