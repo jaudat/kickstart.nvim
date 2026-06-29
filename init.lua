@@ -167,6 +167,12 @@ do
   -- Minimal number of screen lines to keep above and below the cursor.
   vim.o.scrolloff = 10
 
+  -- Set Tab spaces to 2
+  vim.o.tabstop = 2
+  vim.o.shiftwidth = 2
+  vim.o.expandtab = true
+  vim.o.softtabstop = 2
+
   -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
   -- instead raise a dialog asking if you wish to save the current file(s)
   -- See `:help 'confirm'`
@@ -220,10 +226,17 @@ do
   vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
   -- TIP: Disable arrow keys in normal mode
-  -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
-  -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
-  -- vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
-  -- vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+  vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+  vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+  vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+  vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+
+  -- Open parent directory in Oil
+  vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
+
+  -- Copy current file path to clipboard
+  vim.keymap.set('n', '<leader>pc', function() vim.fn.setreg('+', vim.fn.expand '%:p') end, { desc = 'Copy current file absolute path to clipboard' })
+  vim.keymap.set('n', '<leader>pr', function() vim.fn.setreg('+', vim.fn.expand '%') end, { desc = 'Copy current file relative path to clipboard' })
 
   -- Keybinds to make split navigation easier.
   --  Use CTRL+<hjkl> to switch between windows
@@ -382,18 +395,19 @@ do
   -- change the command under that to load whatever the name of that colorscheme is.
   --
   -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-  vim.pack.add { gh 'folke/tokyonight.nvim' }
+  vim.pack.add { gh 'navarasu/onedark.nvim' }
   ---@diagnostic disable-next-line: missing-fields
-  require('tokyonight').setup {
+  require('onedark').setup {
     styles = {
       comments = { italic = false }, -- Disable italics in comments
     },
   }
 
   -- Load the colorscheme here.
-  -- Like many other themes, this one has different styles, and you could load
-  -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-  vim.cmd.colorscheme 'tokyonight-night'
+  vim.cmd.colorscheme 'onedark'
+
+  -- You can configure highlights by doing something like:
+  vim.cmd.hi 'Comment gui=none'
 
   -- Highlight todo, notes, etc in comments
   vim.pack.add { gh 'folke/todo-comments.nvim' }
@@ -426,11 +440,9 @@ do
   }
 
   -- Add/delete/replace surroundings (brackets, quotes, etc.)
-  --
-  -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
-  -- - sd'   - [S]urround [D]elete [']quotes
-  -- - sr)'  - [S]urround [R]eplace [)] [']
-  require('mini.surround').setup()
+  -- NOTE: disabled in favor of kylechui/nvim-surround (configured below).
+  -- Avoids mini.surround claiming the `s` prefix in normal mode.
+  -- require('mini.surround').setup()
 
   -- Simple and easy statusline.
   --  You could remove this setup call if you don't like it,
@@ -447,6 +459,66 @@ do
 
   -- ... and there is more!
   --  Check out: https://github.com/nvim-mini/mini.nvim
+
+  -- ====================== Custom plugins ======================
+
+  -- Git wrapper
+  vim.pack.add { gh 'tpope/vim-fugitive' }
+
+  -- File explorer that lets you edit your filesystem like a buffer (`-` keymap)
+  vim.pack.add { gh 'nvim-tree/nvim-web-devicons', gh 'stevearc/oil.nvim' }
+  require('oil').setup {
+    view_options = {
+      -- Show files and directories that start with "."
+      show_hidden = true,
+      is_hidden_file = function(name, _) return vim.startswith(name, '.') end,
+      is_always_hidden = function(_, _) return false end,
+      natural_order = true,
+      case_insensitive = false,
+      sort = {
+        { 'type', 'asc' },
+        { 'name', 'asc' },
+      },
+    },
+    keymaps = {
+      ['g?'] = 'actions.show_help',
+      ['<CR>'] = 'actions.select',
+      ['<C-s>'] = { 'actions.select', opts = { vertical = true }, desc = 'Open the entry in a vertical split' },
+      ['<C-h>'] = { 'actions.select', opts = { horizontal = true }, desc = 'Open the entry in a horizontal split' },
+      ['<C-t>'] = { 'actions.select', opts = { tab = true }, desc = 'Open the entry in new tab' },
+      ['<C-p>'] = 'actions.preview',
+      ['<C-c>'] = 'actions.close',
+      ['<C-l>'] = 'actions.refresh',
+      ['-'] = 'actions.parent',
+      ['_'] = 'actions.open_cwd',
+      ['`'] = 'actions.cd',
+      ['~'] = { 'actions.cd', opts = { scope = 'tab' }, desc = ':tcd to the current oil directory', mode = 'n' },
+      ['gs'] = 'actions.change_sort',
+      ['gx'] = 'actions.open_external',
+      ['g.'] = 'actions.toggle_hidden',
+      ['g\\'] = 'actions.toggle_trash',
+    },
+  }
+
+  -- Add/delete/replace surroundings (ys/ds/cs). Replaces mini.surround above.
+  vim.pack.add { { src = gh 'kylechui/nvim-surround', version = vim.version.range '3.*' } }
+  require('nvim-surround').setup {}
+
+  -- Context-aware commentstring (e.g. correct comments inside JSX) + Comment.nvim
+  vim.g.skip_ts_context_commentstring_module = true
+  vim.pack.add { gh 'JoosepAlviste/nvim-ts-context-commentstring' }
+  require('ts_context_commentstring').setup { enable_autocmd = false }
+
+  vim.pack.add { gh 'numToStr/Comment.nvim' }
+  require('Comment').setup {
+    pre_hook = require('ts_context_commentstring.integrations.comment_nvim').create_pre_hook(),
+  }
+
+  -- Java LSP via nvim-jdtls (disabled; ftplugin/java.lua expects it if enabled)
+  -- vim.pack.add { gh 'mfussenegger/nvim-jdtls' }
+
+  -- Seamless tmux/vim split navigation (disabled)
+  -- vim.pack.add { gh 'christoomey/vim-tmux-navigator' }
 end
 
 -- ============================================================
@@ -499,7 +571,19 @@ do
     --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
     --   },
     -- },
-    -- pickers = {}
+    defaults = {
+      layout_strategy = 'vertical',
+      layout_config = {
+        vertical = {
+          preview_height = 0.60, -- 60% preview (bottom)
+          results_height = 0.40, -- 40% results (top)
+          preview_cutoff = 0,
+        },
+      },
+      hidden = true,
+      path_display = { 'truncate' }, -- Truncates the *start*, shows the end
+    },
+    pickers = { colorscheme = { enable_preview = true } },
     extensions = {
       ['ui-select'] = { require('telescope.themes').get_dropdown() },
     },
@@ -520,7 +604,17 @@ do
   vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
   vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
   vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
-  vim.keymap.set('n', '<leader>sc', builtin.commands, { desc = '[S]earch [C]ommands' })
+  -- Live grep the current subdirectory (Oil dir if open, else the current file's dir)
+  vim.keymap.set('n', '<leader>sc', function()
+    local cwd
+    local ok, oil = pcall(require, 'oil')
+    if ok and oil.get_current_dir() then
+      cwd = oil.get_current_dir()
+    else
+      cwd = vim.fn.expand '%:p:h'
+    end
+    builtin.live_grep { cwd = cwd }
+  end, { desc = '[S]earch [C]urrent subdirectory by Grep' })
   vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
 
   -- Add Telescope-based LSP pickers when an LSP attaches to a buffer.
@@ -693,15 +787,15 @@ do
   ---@type table<string, vim.lsp.Config>
   local servers = {
     -- clangd = {},
-    -- gopls = {},
+    gopls = {},
+    -- jdtls = {}, -- Java handled via ftplugin/java.lua + nvim-jdtls (currently disabled)
     -- pyright = {},
     -- rust_analyzer = {},
     --
     -- Some languages (like typescript) have entire language plugins that can be useful:
     --    https://github.com/pmizio/typescript-tools.nvim
-    --
-    -- But for many setups, the LSP (`ts_ls`) will work just fine
-    -- ts_ls = {},
+    -- NOTE: typescript-tools.nvim is also enabled below; ts_ls is kept as configured.
+    ts_ls = {},
 
     stylua = {}, -- Used to format Lua code
 
@@ -759,6 +853,7 @@ do
   -- You can press `g?` for help in this menu.
   local ensure_installed = vim.tbl_keys(servers or {})
   vim.list_extend(ensure_installed, {
+    'eslint_d', -- Used for JavaScript/TypeScript linting (nvim-lint)
     -- You can add other tools here that you want Mason to install
   })
 
@@ -768,6 +863,10 @@ do
     vim.lsp.config(name, server)
     vim.lsp.enable(name)
   end
+
+  -- Dedicated TypeScript/JavaScript tooling (deps: plenary [SECTION 5], nvim-lspconfig [above])
+  vim.pack.add { gh 'pmizio/typescript-tools.nvim' }
+  require('typescript-tools').setup {}
 end
 
 -- ============================================================
@@ -796,12 +895,16 @@ do
     },
     -- You can also specify external formatters in here.
     formatters_by_ft = {
-      -- rust = { 'rustfmt' },
+      lua = { 'stylua' },
+      go = { 'gofmt' },
       -- Conform can also run multiple formatters sequentially
       -- python = { "isort", "black" },
       --
-      -- You can use 'stop_after_first' to run the first available formatter from the list
-      -- javascript = { "prettierd", "prettier", stop_after_first = true },
+      -- 'stop_after_first' runs the first available formatter from the list
+      javascript = { 'prettierd', 'prettier', stop_after_first = true },
+      javascriptreact = { 'prettierd', 'prettier', stop_after_first = true },
+      typescript = { 'prettierd', 'prettier', stop_after_first = true },
+      typescriptreact = { 'prettierd', 'prettier', stop_after_first = true },
     },
   }
 
@@ -904,7 +1007,7 @@ do
   vim.pack.add { { src = gh 'nvim-treesitter/nvim-treesitter', version = 'main' } }
 
   -- Ensure basic parsers are installed
-  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' }
+  local parsers = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'go' }
   require('nvim-treesitter').install(parsers)
 
   ---@param buf integer
@@ -968,7 +1071,7 @@ do
   --
   -- require 'kickstart.plugins.debug'
   -- require 'kickstart.plugins.indent_line'
-  -- require 'kickstart.plugins.lint'
+  require 'kickstart.plugins.lint'
   -- require 'kickstart.plugins.autopairs'
   -- require 'kickstart.plugins.neo-tree'
   -- require 'kickstart.plugins.gitsigns' -- adds gitsigns recommended keymaps
