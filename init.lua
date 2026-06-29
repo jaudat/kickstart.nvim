@@ -291,9 +291,13 @@ require('lazy').setup({
   },
 
   {
-
     'JoosepAlviste/nvim-ts-context-commentstring',
-    opts = {},
+    init = function()
+      vim.g.skip_ts_context_commentstring_module = true
+    end,
+    opts = {
+      enable_autocmd = false,
+    },
   },
 
   -- Alternatively, use `config = function() ... end` for full control over the configuration.
