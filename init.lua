@@ -383,6 +383,7 @@ do
     -- Document existing key chains
     spec = {
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
+      { '<leader>sa', group = 'Search [A]ll (incl. ignored)' },
       { '<leader>t', group = '[T]oggle' },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
@@ -601,6 +602,13 @@ do
   vim.keymap.set('n', '<leader>ss', builtin.builtin, { desc = '[S]earch [S]elect Telescope' })
   vim.keymap.set({ 'n', 'v' }, '<leader>sw', builtin.grep_string, { desc = '[S]earch current [W]ord' })
   vim.keymap.set('n', '<leader>sg', builtin.live_grep, { desc = '[S]earch by [G]rep' })
+  -- "All" variants: include hidden and gitignored paths (e.g. node_modules)
+  vim.keymap.set('n', '<leader>saf', function()
+    builtin.find_files { hidden = true, no_ignore = true }
+  end, { desc = '[S]earch [A]ll [F]iles (incl. ignored)' })
+  vim.keymap.set('n', '<leader>sag', function()
+    builtin.live_grep { additional_args = { '--hidden', '--no-ignore' } }
+  end, { desc = '[S]earch [A]ll files by [G]rep (incl. ignored)' })
   vim.keymap.set('n', '<leader>sd', builtin.diagnostics, { desc = '[S]earch [D]iagnostics' })
   vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
   vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
