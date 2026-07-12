@@ -234,9 +234,13 @@ do
   -- Open parent directory in Oil
   vim.keymap.set('n', '-', '<CMD>Oil<CR>', { desc = 'Open parent directory' })
 
-  -- Copy current file path to clipboard
+  -- Copy current file path or GitHub permalink to clipboard; browse current line on GitHub
   vim.keymap.set('n', '<leader>pc', function() vim.fn.setreg('+', vim.fn.expand '%:p') end, { desc = 'Copy current file absolute path to clipboard' })
   vim.keymap.set('n', '<leader>pr', function() vim.fn.setreg('+', vim.fn.expand '%') end, { desc = 'Copy current file relative path to clipboard' })
+  vim.keymap.set('n', '<leader>pp', '<Cmd>.GBrowse!<CR>', { desc = 'Copy current line GitHub permalink to clipboard' })
+  vim.keymap.set('x', '<leader>pp', ':GBrowse!<CR>', { desc = 'Copy selected lines GitHub permalink to clipboard' })
+  vim.keymap.set('n', '<leader>pb', '<Cmd>.GBrowse<CR>', { desc = 'Open current line on GitHub in browser' })
+  vim.keymap.set('x', '<leader>pb', ':GBrowse<CR>', { desc = 'Open selected lines on GitHub in browser' })
 
   -- Keybinds to make split navigation easier.
   --  Use CTRL+<hjkl> to switch between windows
@@ -385,6 +389,7 @@ do
       { '<leader>s', group = '[S]earch', mode = { 'n', 'v' } },
       { '<leader>sa', group = 'Search [A]ll (incl. ignored)' },
       { '<leader>t', group = '[T]oggle' },
+      { '<leader>p', group = '[P]ath / permalink', mode = { 'n', 'v' } },
       { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } }, -- Enable gitsigns recommended keymaps first
       { 'gr', group = 'LSP Actions', mode = { 'n' } },
     },
@@ -463,8 +468,8 @@ do
 
   -- ====================== Custom plugins ======================
 
-  -- Git wrapper
-  vim.pack.add { gh 'tpope/vim-fugitive' }
+  -- Git wrapper and GitHub URL support for :GBrowse (permalink keymaps live under <leader>p)
+  vim.pack.add { gh 'tpope/vim-fugitive', gh 'tpope/vim-rhubarb' }
 
   -- File explorer that lets you edit your filesystem like a buffer (`-` keymap)
   vim.pack.add { gh 'nvim-tree/nvim-web-devicons', gh 'stevearc/oil.nvim' }
